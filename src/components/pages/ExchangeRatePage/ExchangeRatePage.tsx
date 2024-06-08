@@ -3,9 +3,9 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { isToday } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { isToday } from 'date-fns';
 
 import CustomTable from '../../../components/common/CustomTable/CustomTable';
 import { ExchangeRate } from '../../../types';
@@ -55,7 +55,7 @@ const ExchangeRatePage: React.FC = () => {
   };
 
   const handleRowClick = (row: ExchangeRate) => {
-    console.log(row);
+    navigate(`/exchange-rate-history/${row.valuta}/${formatDate(date)}`);
   };
 
   /**

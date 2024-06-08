@@ -15,7 +15,11 @@ function App() {
             <Route path="/" element={<HomePage />}></Route>
             <Route path="/exchange-rate" element={<ExchangeRatePage />}></Route>
             <Route
-              path="/exchange-rate-history"
+              path="/exchange-rate-history/:currency/:date"
+              element={<ExchangeRateHistoryPage />}
+            ></Route>
+            <Route
+              path="/exchange-rate-history/:currency"
               element={<ExchangeRateHistoryPage />}
             ></Route>
           </Routes>
