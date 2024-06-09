@@ -9,19 +9,20 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 
-import { ExchangeRate } from 'src/types';
+import { ExchangeRate } from '../../../types/';
+import { formatText } from '../../../utils/formatText';
 
 type CustomTableProps = {
   data: ExchangeRate[];
   sortable?: boolean;
-  idxOffset?: number;
+  columnOffset?: number;
   onRowClick: (row: ExchangeRate) => void;
 };
 
 const CustomTable: React.FC<CustomTableProps> = ({
   data,
   sortable = true,
-  idxOffset = 2,
+  columnOffset = 2,
   onRowClick,
 }) => {
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
@@ -74,7 +75,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
           <TextField
             key={key}
             name={key}
-            label={key}
+            label={formatText(key)}
             value={filter[key as keyof typeof filter]}
             onChange={handleFilterChange}
           />
@@ -89,7 +90,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
           <TableHead>
             <TableRow sx={{ cursor: 'pointer' }}>
               {Object.keys(data[0]).map((headCell, idx) => {
-                if (idx >= idxOffset) {
+                if (idx >= columnOffset) {
                   return sortable ? (
                     <TableCell key={headCell}>
                       <TableSortLabel
@@ -99,7 +100,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
                           handleRequestSort(headCell as keyof ExchangeRate)
                         }
                       >
-                        {headCell}
+                        {formatText(headCell)}
                       </TableSortLabel>
                     </TableCell>
                   ) : (
@@ -114,7 +115,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
             {sortedData.map((row) => (
               <TableRow key={row.sifra_valute} onClick={() => onRowClick(row)}>
                 {Object.values(row).map((cell, idx) => {
-                  if (idx >= idxOffset)
+                  if (idx >= columnOffset)
                     return (
                       <TableCell key={idx}>{cell as React.ReactNode}</TableCell>
                     );

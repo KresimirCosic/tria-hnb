@@ -97,7 +97,11 @@ const ExchangeRatePage: React.FC = () => {
           <br />
 
           {/* Table */}
-          <CustomTable data={data} onRowClick={handleRowClick} />
+          <CustomTable
+            data={data}
+            onRowClick={handleRowClick}
+            columnOffset={2}
+          />
         </Container>
       </div>
     </DashboardLayout>
