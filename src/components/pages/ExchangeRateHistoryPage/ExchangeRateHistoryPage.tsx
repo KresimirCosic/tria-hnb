@@ -2,7 +2,7 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { subDays } from 'date-fns/subDays';
+import { subDays } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -49,7 +49,15 @@ const ExchangeRateHistoryPage: React.FC = () => {
               .filter((entry) => entry.valuta === currency)
               .map((entry) => [entry['broj_tecajnice'], entry])
           ).values(),
-        ];
+        ].sort((a, b) => {
+          const first = new Date(a.datum_primjene);
+          const second = new Date(b.datum_primjene);
+
+          if (first > second) return -1;
+          if (second < first) return 1;
+
+          return 0;
+        });
 
         setData(filteredData);
         setIsFetching(false);
@@ -110,7 +118,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
             value={selectedDate}
             label="Please select date"
             disableFuture
-            disabled={!!date}
+            disabled={!!date || isFetching}
             onChange={handleDateChange}
           />
           <TextField
@@ -119,6 +127,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
             onChange={handleSelectedPastDaysChange}
             inputProps={{ min: minPastDays, max: maxPastDays }}
             label="Number of days"
+            disabled={isFetching}
           />
 
           <CustomTable data={data} columnOffset={0}></CustomTable>
