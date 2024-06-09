@@ -30,11 +30,6 @@ const CustomTable: React.FC<CustomTableProps> = ({
   columnOffset = 2,
   onRowClick,
 }) => {
-  const columnsToColor: (keyof Pick<
-    ExchangeRate,
-    'kupovni_tecaj' | 'srednji_tecaj' | 'prodajni_tecaj'
-  >)[] = ['kupovni_tecaj', 'srednji_tecaj', 'prodajni_tecaj'];
-
   /**
    * State
    */
@@ -89,12 +84,12 @@ const CustomTable: React.FC<CustomTableProps> = ({
     currentExchangeRate: ExchangeRate,
     previousExchangeRate?: ExchangeRate
   ): CellColor => {
-    if (!previousExchangeRate) return '#fff';
+    if (!previousExchangeRate) return CellColor.WHITE;
 
     if (previousExchangeRate.srednji_tecaj > currentExchangeRate.srednji_tecaj)
-      return '#ff0000';
+      return CellColor.ERROR;
 
-    return '#00ff00';
+    return CellColor.SUCCESS;
   };
 
   return (
