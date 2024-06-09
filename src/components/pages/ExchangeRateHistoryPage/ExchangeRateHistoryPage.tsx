@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import CustomTable from '../../../components/common/CustomTable/CustomTable';
 import { ExchangeRate } from '../../../types';
 import { formatDate } from '../../../utils/formatDate';
-import DashboardLayout from '../../layouts/DashboardLayout/DashboardLayout';
+import DefaultLayout from '../../layouts/DefaultLayout/DefaultLayout';
 
 const ExchangeRateHistoryPage: React.FC = () => {
   /**
@@ -103,7 +103,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
   if (!data.length) return <div>Loading...</div>;
 
   return (
-    <DashboardLayout>
+    <DefaultLayout>
       <div className="page page-exchange-rate-history">
         <Container>
           <Typography variant="h4">
@@ -139,7 +139,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
           />
         </Container>
       </div>
-    </DashboardLayout>
+    </DefaultLayout>
   );
 };
 
