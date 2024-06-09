@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import CustomTable from '../../../components/common/CustomTable/CustomTable';
 import { ExchangeRate } from '../../../types';
 import { formatDate } from '../../../utils/formatDate';
-import DashboardLayout from '../../layouts/DashboardLayout/DashboardLayout';
+import DefaultLayout from '../../layouts/DefaultLayout/DefaultLayout';
 
 const ExchangeRatePage: React.FC = () => {
   /**
@@ -66,7 +66,7 @@ const ExchangeRatePage: React.FC = () => {
   if (!data.length) return <div>Loading...</div>;
 
   return (
-    <DashboardLayout>
+    <DefaultLayout>
       <div className="page page-exchange-rate">
         <Container>
           {/* Controls */}
@@ -106,7 +106,7 @@ const ExchangeRatePage: React.FC = () => {
           />
         </Container>
       </div>
-    </DashboardLayout>
+    </DefaultLayout>
   );
 };
 
