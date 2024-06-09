@@ -9,12 +9,15 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 
-import { ExchangeRate } from '../../../types/';
+import { CellColor } from '../../../enums';
+import { ExchangeRate } from '../../../types';
 import { formatText } from '../../../utils/formatText';
 
 type CustomTableProps = {
   data: ExchangeRate[];
   sortable?: boolean;
+  filterable?: boolean;
+  colored?: boolean;
   columnOffset?: number;
   onRowClick?: (row: ExchangeRate) => void;
 };
@@ -22,9 +25,19 @@ type CustomTableProps = {
 const CustomTable: React.FC<CustomTableProps> = ({
   data,
   sortable = true,
+  filterable = true,
+  colored = false,
   columnOffset = 2,
   onRowClick,
 }) => {
+  const columnsToColor: (keyof Pick<
+    ExchangeRate,
+    'kupovni_tecaj' | 'srednji_tecaj' | 'prodajni_tecaj'
+  >)[] = ['kupovni_tecaj', 'srednji_tecaj', 'prodajni_tecaj'];
+
+  /**
+   * State
+   */
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [orderBy, setOrderBy] = useState<keyof ExchangeRate | ''>('');
   const [filter, setFilter] = useState<
@@ -58,29 +71,47 @@ const CustomTable: React.FC<CustomTableProps> = ({
     return 0;
   });
 
+  /**
+   * Methods
+   */
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilter({ ...filter, [event.target.name]: event.target.value });
   };
 
   const handleRequestSort = (property: keyof ExchangeRate) => {
     const isAsc = orderBy === property && order === 'asc';
+
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
+  const getCellColor = (
+    currentExchangeRate: ExchangeRate,
+    previousExchangeRate?: ExchangeRate
+  ): CellColor => {
+    if (!previousExchangeRate) return '#fff';
+
+    if (previousExchangeRate.srednji_tecaj > currentExchangeRate.srednji_tecaj)
+      return '#ff0000';
+
+    return '#00ff00';
+  };
+
   return (
     <>
-      <div>
-        {Object.keys(filter).map((key) => (
-          <TextField
-            key={key}
-            name={key}
-            label={formatText(key)}
-            value={filter[key as keyof typeof filter]}
-            onChange={handleFilterChange}
-          />
-        ))}
-      </div>
+      {filterable && (
+        <div>
+          {Object.keys(filter).map((key) => (
+            <TextField
+              key={key}
+              name={key}
+              label={formatText(key)}
+              value={filter[key as keyof typeof filter]}
+              onChange={handleFilterChange}
+            />
+          ))}
+        </div>
+      )}
 
       <br />
       <br />
@@ -104,7 +135,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
                       </TableSortLabel>
                     </TableCell>
                   ) : (
-                    <TableCell key={headCell}>{headCell}</TableCell>
+                    <TableCell key={headCell}>{formatText(headCell)}</TableCell>
                   );
                 }
               })}
@@ -112,19 +143,37 @@ const CustomTable: React.FC<CustomTableProps> = ({
           </TableHead>
 
           <TableBody>
-            {sortedData.map((row) => (
-              <TableRow
-                key={`${row.broj_tecajnice}-${row.sifra_valute}`}
-                onClick={() => onRowClick(row)}
-              >
-                {Object.values(row).map((cell, idx) => {
-                  if (idx >= columnOffset)
-                    return (
-                      <TableCell key={idx}>{cell as React.ReactNode}</TableCell>
-                    );
-                })}
-              </TableRow>
-            ))}
+            {sortedData.map((row, rIdx) => {
+              return (
+                <TableRow
+                  key={`${row.broj_tecajnice}-${row.sifra_valute}`}
+                  onClick={() => {
+                    if (onRowClick) onRowClick(row);
+                  }}
+                >
+                  {Object.values(row).map((cell, idx) => {
+                    if (idx >= columnOffset)
+                      return (
+                        <TableCell
+                          sx={
+                            colored
+                              ? {
+                                  backgroundColor: getCellColor(
+                                    row,
+                                    data[rIdx + 1]
+                                  ),
+                                }
+                              : null
+                          }
+                          key={idx}
+                        >
+                          {cell}
+                        </TableCell>
+                      );
+                  })}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

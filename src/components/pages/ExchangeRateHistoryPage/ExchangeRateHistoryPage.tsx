@@ -130,7 +130,13 @@ const ExchangeRateHistoryPage: React.FC = () => {
             disabled={isFetching}
           />
 
-          <CustomTable data={data} columnOffset={0}></CustomTable>
+          <CustomTable
+            data={data}
+            columnOffset={0}
+            sortable={false}
+            filterable={false}
+            colored
+          />
         </Container>
       </div>
     </DashboardLayout>
