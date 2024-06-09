@@ -3,48 +3,61 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { isToday } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import CustomTable from '../../../components/common/CustomTable/CustomTable';
 import { ExchangeRate } from '../../../types';
 import { formatDate } from '../../../utils/formatDate';
 import DashboardLayout from '../../layouts/DashboardLayout/DashboardLayout';
-import CustomTable from '../../../components/common/CustomTable/CustomTable';
 
 const ExchangeRatePage: React.FC = () => {
   /**
    * State
    */
-  const [date, setDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [data, setData] = useState<ExchangeRate[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
   const navigate = useNavigate();
 
   /**
    * Side effects
    */
   useEffect(() => {
-    fetch(`/api/tecajn-eur/v3?datum-primjene=${formatDate(date)}`)
+    setIsFetching(true);
+
+    fetch(`/api/tecajn-eur/v3?datum-primjene=${formatDate(selectedDate)}`)
       .then((res) => res.json())
-      .then((data: ExchangeRate[]) => setData(data));
-  }, [date]);
+      .then((data: ExchangeRate[]) => {
+        setData(data);
+        setIsFetching(false);
+      });
+  }, [selectedDate]);
 
   /**
    * Methods
    */
+  const handleDateChange = (value: Date | null) => {
+    setSelectedDate(value!);
+  };
+
   const handlePrevDate = () => {
-    const prevDate = new Date(date);
+    const prevDate = new Date(selectedDate);
     prevDate.setDate(prevDate.getDate() - 1);
-    setDate(prevDate);
+    setSelectedDate(prevDate);
   };
 
   const handleNextDate = () => {
-    const nextDate = new Date(date);
+    const nextDate = new Date(selectedDate);
     nextDate.setDate(nextDate.getDate() + 1);
-    setDate(nextDate);
+    setSelectedDate(nextDate);
   };
 
   const handleRowClick = (row: ExchangeRate) => {
-    console.log(row);
+    navigate(
+      `/exchange-rate-history/${row.valuta}/${formatDate(selectedDate)}`
+    );
   };
 
   /**
@@ -56,24 +69,41 @@ const ExchangeRatePage: React.FC = () => {
     <DashboardLayout>
       <div className="page page-exchange-rate">
         <Container>
-          <Typography variant="h1">Exchange rate</Typography>
-
           {/* Controls */}
-          <DatePicker value={date} label="Please select date" />
+          <DatePicker
+            value={selectedDate}
+            label="Please select date"
+            onChange={handleDateChange}
+            disableFuture
+          />
 
           <br />
           <br />
 
-          <ButtonGroup variant="contained" size="large">
+          <ButtonGroup variant="contained" size="large" disabled={isFetching}>
             <Button onClick={handlePrevDate}>Previous day</Button>
-            <Button onClick={handleNextDate}>Next day</Button>
+            <Button onClick={handleNextDate} disabled={isToday(selectedDate)}>
+              Next day
+            </Button>
           </ButtonGroup>
 
           <br />
           <br />
 
+          <Typography variant="h4">
+            Exchange rate number: {data[0].broj_tecajnice}
+          </Typography>
+          <Typography variant="h4">Date: {data[0].datum_primjene}</Typography>
+
+          <br />
+          <br />
+
           {/* Table */}
-          <CustomTable data={data} onRowClick={handleRowClick} />
+          <CustomTable
+            data={data}
+            onRowClick={handleRowClick}
+            columnOffset={2}
+          />
         </Container>
       </div>
     </DashboardLayout>
