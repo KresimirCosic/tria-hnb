@@ -16,7 +16,7 @@ type CustomTableProps = {
   data: ExchangeRate[];
   sortable?: boolean;
   columnOffset?: number;
-  onRowClick: (row: ExchangeRate) => void;
+  onRowClick?: (row: ExchangeRate) => void;
 };
 
 const CustomTable: React.FC<CustomTableProps> = ({
@@ -113,7 +113,10 @@ const CustomTable: React.FC<CustomTableProps> = ({
 
           <TableBody>
             {sortedData.map((row) => (
-              <TableRow key={row.sifra_valute} onClick={() => onRowClick(row)}>
+              <TableRow
+                key={`${row.broj_tecajnice}-${row.sifra_valute}`}
+                onClick={() => onRowClick(row)}
+              >
                 {Object.values(row).map((cell, idx) => {
                   if (idx >= columnOffset)
                     return (

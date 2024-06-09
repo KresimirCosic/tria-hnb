@@ -1,16 +1,23 @@
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { subDays } from 'date-fns/subDays';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
+import CustomTable from '../../../components/common/CustomTable/CustomTable';
+import { ExchangeRate } from '../../../types';
 import { formatDate } from '../../../utils/formatDate';
 import DashboardLayout from '../../layouts/DashboardLayout/DashboardLayout';
-import { ExchangeRate } from '../../../types';
 
 const ExchangeRateHistoryPage: React.FC = () => {
+  /**
+   * Constants
+   */
+  const minPastDays = 2;
+  const maxPastDays = 60;
+
   /**
    * State
    */
@@ -19,7 +26,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
     date ? new Date(date) : new Date()
   );
   const [data, setData] = useState<ExchangeRate[]>([]);
-  const [selectedPastDays, setSelectedPastDays] = useState(2);
+  const [selectedPastDays, setSelectedPastDays] = useState(minPastDays);
   const [isFetching, setIsFetching] = useState(false);
 
   /**
@@ -36,9 +43,16 @@ const ExchangeRateHistoryPage: React.FC = () => {
     )
       .then((res) => res.json())
       .then((data: ExchangeRate[]) => {
-        setData(data);
+        const filteredData = [
+          ...new Map(
+            data
+              .filter((entry) => entry.valuta === currency)
+              .map((entry) => [entry['broj_tecajnice'], entry])
+          ).values(),
+        ];
+
+        setData(filteredData);
         setIsFetching(false);
-        console.log(data);
       });
   }, [selectedDate, selectedPastDays]);
 
@@ -62,18 +76,23 @@ const ExchangeRateHistoryPage: React.FC = () => {
       return;
     }
 
-    if (Number(value) < 2) {
-      setSelectedPastDays(2);
+    if (Number(value) < minPastDays) {
+      setSelectedPastDays(minPastDays);
       return;
     }
 
-    if (Number(value) >= 60) {
-      setSelectedPastDays(60);
+    if (Number(value) >= maxPastDays) {
+      setSelectedPastDays(maxPastDays);
       return;
     }
 
     setSelectedPastDays(Number(value));
   };
+
+  /**
+   * Fallback in case the data array is empty
+   */
+  if (!data.length) return <div>Loading...</div>;
 
   return (
     <DashboardLayout>
@@ -98,9 +117,11 @@ const ExchangeRateHistoryPage: React.FC = () => {
             type="number"
             value={selectedPastDays}
             onChange={handleSelectedPastDaysChange}
-            inputProps={{ min: 2, max: 60 }}
-            label="Broj dana"
+            inputProps={{ min: minPastDays, max: maxPastDays }}
+            label="Number of days"
           />
+
+          <CustomTable data={data} columnOffset={0}></CustomTable>
         </Container>
       </div>
     </DashboardLayout>
