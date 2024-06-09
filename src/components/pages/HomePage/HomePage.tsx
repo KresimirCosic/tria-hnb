@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
       icon: <CurrencyExchangeIcon />,
     },
     {
-      to: '/exchange-rate-history',
+      to: '/exchange-rate-history/USD',
       icon: <DollarIcon />,
     },
   ];

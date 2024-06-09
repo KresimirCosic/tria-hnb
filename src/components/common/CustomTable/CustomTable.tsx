@@ -13,10 +13,15 @@ import { ExchangeRate } from 'src/types';
 
 type CustomTableProps = {
   data: ExchangeRate[];
+  sortable?: boolean;
   onRowClick: (row: ExchangeRate) => void;
 };
 
-const CustomTable: React.FC<CustomTableProps> = ({ data, onRowClick }) => {
+const CustomTable: React.FC<CustomTableProps> = ({
+  data,
+  sortable = true,
+  onRowClick,
+}) => {
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [orderBy, setOrderBy] = useState<keyof ExchangeRate | ''>('');
   const [filter, setFilter] = useState<
@@ -82,7 +87,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ data, onRowClick }) => {
           <TableHead>
             <TableRow sx={{ cursor: 'pointer' }}>
               {Object.keys(data[0]).map((headCell) => {
-                return (
+                return sortable ? (
                   <TableCell key={headCell}>
                     <TableSortLabel
                       active={orderBy === headCell}
@@ -94,6 +99,8 @@ const CustomTable: React.FC<CustomTableProps> = ({ data, onRowClick }) => {
                       {headCell}
                     </TableSortLabel>
                   </TableCell>
+                ) : (
+                  <TableCell key={headCell}>{headCell}</TableCell>
                 );
               })}
             </TableRow>

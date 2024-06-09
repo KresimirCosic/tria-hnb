@@ -95,6 +95,11 @@ const ExchangeRatePage: React.FC = () => {
           <br />
           <br />
 
+          <Typography variant="h4">
+            Exchange rate number: {data[0].broj_tecajnice}
+          </Typography>
+          <Typography variant="h4">Date: {data[0].datum_primjene}</Typography>
+
           {/* Table */}
           <CustomTable data={data} onRowClick={handleRowClick} />
         </Container>
