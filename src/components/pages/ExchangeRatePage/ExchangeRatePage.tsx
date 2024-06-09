@@ -67,13 +67,6 @@ const ExchangeRatePage: React.FC = () => {
     <DashboardLayout>
       <div className="page page-exchange-rate">
         <Container>
-          <Typography variant="h4">
-            Exchange rate ({formatDate(date)})
-          </Typography>
-
-          <br />
-          <br />
-
           {/* Controls */}
           <DatePicker
             value={date}
@@ -99,6 +92,9 @@ const ExchangeRatePage: React.FC = () => {
             Exchange rate number: {data[0].broj_tecajnice}
           </Typography>
           <Typography variant="h4">Date: {data[0].datum_primjene}</Typography>
+
+          <br />
+          <br />
 
           {/* Table */}
           <CustomTable data={data} onRowClick={handleRowClick} />
