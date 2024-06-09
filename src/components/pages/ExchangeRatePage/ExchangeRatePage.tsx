@@ -16,7 +16,7 @@ const ExchangeRatePage: React.FC = () => {
   /**
    * State
    */
-  const [date, setDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [data, setData] = useState<ExchangeRate[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const navigate = useNavigate();
@@ -27,35 +27,37 @@ const ExchangeRatePage: React.FC = () => {
   useEffect(() => {
     setIsFetching(true);
 
-    fetch(`/api/tecajn-eur/v3?datum-primjene=${formatDate(date)}`)
+    fetch(`/api/tecajn-eur/v3?datum-primjene=${formatDate(selectedDate)}`)
       .then((res) => res.json())
       .then((data: ExchangeRate[]) => {
         setData(data);
         setIsFetching(false);
       });
-  }, [date]);
+  }, [selectedDate]);
 
   /**
    * Methods
    */
   const handleDateChange = (value: Date | null) => {
-    setDate(value!);
+    setSelectedDate(value!);
   };
 
   const handlePrevDate = () => {
-    const prevDate = new Date(date);
+    const prevDate = new Date(selectedDate);
     prevDate.setDate(prevDate.getDate() - 1);
-    setDate(prevDate);
+    setSelectedDate(prevDate);
   };
 
   const handleNextDate = () => {
-    const nextDate = new Date(date);
+    const nextDate = new Date(selectedDate);
     nextDate.setDate(nextDate.getDate() + 1);
-    setDate(nextDate);
+    setSelectedDate(nextDate);
   };
 
   const handleRowClick = (row: ExchangeRate) => {
-    navigate(`/exchange-rate-history/${row.valuta}/${formatDate(date)}`);
+    navigate(
+      `/exchange-rate-history/${row.valuta}/${formatDate(selectedDate)}`
+    );
   };
 
   /**
@@ -69,7 +71,7 @@ const ExchangeRatePage: React.FC = () => {
         <Container>
           {/* Controls */}
           <DatePicker
-            value={date}
+            value={selectedDate}
             label="Please select date"
             onChange={handleDateChange}
             disableFuture
@@ -80,7 +82,7 @@ const ExchangeRatePage: React.FC = () => {
 
           <ButtonGroup variant="contained" size="large" disabled={isFetching}>
             <Button onClick={handlePrevDate}>Previous day</Button>
-            <Button onClick={handleNextDate} disabled={isToday(date)}>
+            <Button onClick={handleNextDate} disabled={isToday(selectedDate)}>
               Next day
             </Button>
           </ButtonGroup>
