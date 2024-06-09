@@ -11,12 +11,6 @@ const Header: React.FC<HeaderProps> = ({ classes }) => {
       <Link to={'/'}>
         <Button>Home</Button>
       </Link>
-      <Link to={'/exchange-rate'}>
-        <Button>Exchange Rate</Button>
-      </Link>
-      <Link to={'/exchange-rate-history'}>
-        <Button>Exchange Rate History</Button>
-      </Link>
     </div>
   );
 };

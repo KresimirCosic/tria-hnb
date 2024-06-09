@@ -13,10 +13,17 @@ import { ExchangeRate } from 'src/types';
 
 type CustomTableProps = {
   data: ExchangeRate[];
+  sortable?: boolean;
+  idxOffset?: number;
   onRowClick: (row: ExchangeRate) => void;
 };
 
-const CustomTable: React.FC<CustomTableProps> = ({ data, onRowClick }) => {
+const CustomTable: React.FC<CustomTableProps> = ({
+  data,
+  sortable = true,
+  idxOffset = 2,
+  onRowClick,
+}) => {
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [orderBy, setOrderBy] = useState<keyof ExchangeRate | ''>('');
   const [filter, setFilter] = useState<
@@ -54,6 +61,12 @@ const CustomTable: React.FC<CustomTableProps> = ({ data, onRowClick }) => {
     setFilter({ ...filter, [event.target.name]: event.target.value });
   };
 
+  const handleRequestSort = (property: keyof ExchangeRate) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
   return (
     <>
       <div>
@@ -68,21 +81,31 @@ const CustomTable: React.FC<CustomTableProps> = ({ data, onRowClick }) => {
         ))}
       </div>
 
+      <br />
+      <br />
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow>
-              {Object.keys(data[0]).map((headCell) => {
-                return (
-                  <TableCell key={headCell}>
-                    <TableSortLabel
-                      active={orderBy === headCell}
-                      direction={orderBy === headCell ? order : 'asc'}
-                    >
-                      {headCell}
-                    </TableSortLabel>
-                  </TableCell>
-                );
+            <TableRow sx={{ cursor: 'pointer' }}>
+              {Object.keys(data[0]).map((headCell, idx) => {
+                if (idx >= idxOffset) {
+                  return sortable ? (
+                    <TableCell key={headCell}>
+                      <TableSortLabel
+                        active={orderBy === headCell}
+                        direction={orderBy === headCell ? order : 'asc'}
+                        onClick={() =>
+                          handleRequestSort(headCell as keyof ExchangeRate)
+                        }
+                      >
+                        {headCell}
+                      </TableSortLabel>
+                    </TableCell>
+                  ) : (
+                    <TableCell key={headCell}>{headCell}</TableCell>
+                  );
+                }
               })}
             </TableRow>
           </TableHead>
@@ -90,9 +113,12 @@ const CustomTable: React.FC<CustomTableProps> = ({ data, onRowClick }) => {
           <TableBody>
             {sortedData.map((row) => (
               <TableRow key={row.sifra_valute} onClick={() => onRowClick(row)}>
-                {Object.values(row).map((cell, index) => (
-                  <TableCell key={index}>{cell as React.ReactNode}</TableCell>
-                ))}
+                {Object.values(row).map((cell, idx) => {
+                  if (idx >= idxOffset)
+                    return (
+                      <TableCell key={idx}>{cell as React.ReactNode}</TableCell>
+                    );
+                })}
               </TableRow>
             ))}
           </TableBody>
