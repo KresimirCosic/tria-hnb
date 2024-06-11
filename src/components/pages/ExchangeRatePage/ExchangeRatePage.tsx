@@ -17,6 +17,7 @@ const ExchangeRatePage: React.FC = () => {
    * Constants
    */
   const url = import.meta.env.VITE_API_URL;
+  const isProd = import.meta.env.PROD;
 
   /**
    * State
@@ -32,7 +33,9 @@ const ExchangeRatePage: React.FC = () => {
   useEffect(() => {
     setIsFetching(true);
 
-    fetch(`${url}/tecajn-eur/v3?datum-primjene=${formatDate(selectedDate)}`)
+    fetch(
+      `${isProd ? 'https://corsproxy.io?' : ''}${url}/tecajn-eur/v3?datum-primjene=${formatDate(selectedDate)}`
+    )
       .then((res) => res.json())
       .then((data: ExchangeRate[]) => {
         setData(data);
