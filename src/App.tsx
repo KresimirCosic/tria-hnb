@@ -7,12 +7,10 @@ import ExchangeRatePage from './components/pages/ExchangeRatePage/ExchangeRatePa
 import HomePage from './components/pages/HomePage/HomePage';
 
 function App() {
-  console.log(import.meta.env.VITE_API_URL);
-
   return (
     <div id="app">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Router>
+        <Router basename={import.meta.env.DEV ? undefined : 'tria-hnb'}>
           <Routes>
             <Route path="/" element={<HomePage />}></Route>
             <Route path="/exchange-rate" element={<ExchangeRatePage />}></Route>
