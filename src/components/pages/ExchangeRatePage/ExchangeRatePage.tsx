@@ -14,6 +14,11 @@ import DefaultLayout from '../../layouts/DefaultLayout/DefaultLayout';
 
 const ExchangeRatePage: React.FC = () => {
   /**
+   * Constants
+   */
+  const url = import.meta.env.VITE_API_URL;
+
+  /**
    * State
    */
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -27,7 +32,7 @@ const ExchangeRatePage: React.FC = () => {
   useEffect(() => {
     setIsFetching(true);
 
-    fetch(`/api/tecajn-eur/v3?datum-primjene=${formatDate(selectedDate)}`)
+    fetch(`${url}/tecajn-eur/v3?datum-primjene=${formatDate(selectedDate)}`)
       .then((res) => res.json())
       .then((data: ExchangeRate[]) => {
         setData(data);

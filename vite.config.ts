@@ -7,13 +7,15 @@ export default defineConfig(({ command }) => {
   return {
     plugins: [react()],
     server: {
-      proxy: {
-        '/api': {
-          target: 'https://api.hnb.hr',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
-        },
-      },
+      proxy: isProduction
+        ? undefined
+        : {
+            '/api': {
+              target: 'https://api.hnb.hr',
+              changeOrigin: true,
+              rewrite: (path) => path.replace(/^\/api/, ''),
+            },
+          },
     },
     base: isProduction ? '/tria-hnb/' : '/',
   };

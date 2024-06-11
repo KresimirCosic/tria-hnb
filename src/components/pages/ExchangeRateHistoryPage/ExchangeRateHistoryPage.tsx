@@ -15,6 +15,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
   /**
    * Constants
    */
+  const url = import.meta.env.VITE_API_URL;
   const minPastDays = 2;
   const maxPastDays = 60;
 
@@ -39,7 +40,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
     setIsFetching(true);
 
     fetch(
-      `/api/tecajn-eur/v3?datum-primjene-od=${formatDate(startDate)}&datum-primjene-do=${formatDate(endDate)}`
+      `${url}/tecajn-eur/v3?datum-primjene-od=${formatDate(startDate)}&datum-primjene-do=${formatDate(endDate)}`
     )
       .then((res) => res.json())
       .then((data: ExchangeRate[]) => {
