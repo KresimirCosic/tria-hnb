@@ -4,44 +4,25 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { isToday } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CustomTable from '../../../components/common/CustomTable/CustomTable';
+import { useFetch } from '../../../hooks';
 import { ExchangeRate } from '../../../types';
 import { formatDate } from '../../../utils/formatDate';
 import DefaultLayout from '../../layouts/DefaultLayout/DefaultLayout';
 
 const ExchangeRatePage: React.FC = () => {
   /**
-   * Constants
-   */
-  const url = import.meta.env.VITE_API_URL;
-  const isProd = import.meta.env.PROD;
-
-  /**
    * State
    */
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [data, setData] = useState<ExchangeRate[]>([]);
-  const [isFetching, setIsFetching] = useState(false);
   const navigate = useNavigate();
-
-  /**
-   * Side effects
-   */
-  useEffect(() => {
-    setIsFetching(true);
-
-    fetch(
-      `${isProd ? 'https://corsproxy.io?' : ''}${url}/tecajn-eur/v3?datum-primjene=${formatDate(selectedDate)}`
-    )
-      .then((res) => res.json())
-      .then((data: ExchangeRate[]) => {
-        setData(data);
-        setIsFetching(false);
-      });
-  }, [selectedDate]);
+  const { data, loading } = useFetch<ExchangeRate>(
+    `/tecajn-eur/v3?datum-primjene=${formatDate(selectedDate)}`,
+    [selectedDate]
+  );
 
   /**
    * Methods
@@ -88,7 +69,7 @@ const ExchangeRatePage: React.FC = () => {
           <br />
           <br />
 
-          <ButtonGroup variant="contained" size="large" disabled={isFetching}>
+          <ButtonGroup variant="contained" size="large" disabled={loading}>
             <Button onClick={handlePrevDate}>Previous day</Button>
             <Button onClick={handleNextDate} disabled={isToday(selectedDate)}>
               Next day
