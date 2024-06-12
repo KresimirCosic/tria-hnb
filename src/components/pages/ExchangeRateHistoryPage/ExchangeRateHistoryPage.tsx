@@ -1,3 +1,4 @@
+import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -96,7 +97,12 @@ const ExchangeRateHistoryPage: React.FC = () => {
   /**
    * Fallback in case the data array is empty
    */
-  if (!filteredData.length) return <div>Loading...</div>;
+  if (!filteredData.length)
+    return (
+      <Container>
+        <CircularProgress />
+      </Container>
+    );
 
   return (
     <DefaultLayout>

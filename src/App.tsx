@@ -5,12 +5,13 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import ExchangeRateHistoryPage from './components/pages/ExchangeRateHistoryPage/ExchangeRateHistoryPage';
 import ExchangeRatePage from './components/pages/ExchangeRatePage/ExchangeRatePage';
 import HomePage from './components/pages/HomePage/HomePage';
+import { IS_PROD } from './constants';
 
 function App() {
   return (
     <div id="app">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Router basename={import.meta.env.DEV ? undefined : 'tria-hnb'}>
+        <Router basename={IS_PROD ? 'tria-hnb' : undefined}>
           <Routes>
             <Route path="/" element={<HomePage />}></Route>
             <Route path="/exchange-rate" element={<ExchangeRatePage />}></Route>
