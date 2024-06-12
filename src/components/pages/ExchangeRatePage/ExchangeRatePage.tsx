@@ -28,7 +28,11 @@ const ExchangeRatePage: React.FC = () => {
    * Methods
    */
   const handleDateChange = (value: Date | null) => {
-    setSelectedDate(value!);
+    if (!value) return;
+
+    if (!isNaN(value!.getTime())) {
+      setSelectedDate(value!);
+    }
   };
 
   const handlePrevDate = () => {
