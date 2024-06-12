@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import CustomTable from '../../../components/common/CustomTable/CustomTable';
+import { useFetch } from '../../../hooks';
 import { ExchangeRate } from '../../../types';
 import { formatDate } from '../../../utils/formatDate';
 import DefaultLayout from '../../layouts/DefaultLayout/DefaultLayout';
@@ -15,8 +16,6 @@ const ExchangeRateHistoryPage: React.FC = () => {
   /**
    * Constants
    */
-  const url = import.meta.env.VITE_API_URL;
-  const isProd = import.meta.env.PROD;
   const minPastDays = 2;
   const maxPastDays = 60;
 
@@ -27,44 +26,39 @@ const ExchangeRateHistoryPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(
     date ? new Date(date) : new Date()
   );
-  const [data, setData] = useState<ExchangeRate[]>([]);
   const [selectedPastDays, setSelectedPastDays] = useState(minPastDays);
-  const [isFetching, setIsFetching] = useState(false);
+  const endDate = selectedDate;
+  const startDate = subDays(endDate, selectedPastDays);
+  const { data, loading } = useFetch<ExchangeRate>(
+    `/tecajn-eur/v3?datum-primjene-od=${formatDate(startDate)}&datum-primjene-do=${formatDate(endDate)}`,
+    [selectedDate, selectedPastDays]
+  );
+  const [filteredData, setFilteredData] = useState<ExchangeRate[]>([]);
 
   /**
    * Side effects
    */
   useEffect(() => {
-    const endDate = selectedDate;
-    const startDate = subDays(endDate, selectedPastDays);
+    if (data) {
+      const filtered = [
+        ...new Map(
+          data
+            .filter((entry) => entry.valuta === currency)
+            .map((entry) => [entry['broj_tecajnice'], entry])
+        ).values(),
+      ].sort((a, b) => {
+        const first = new Date(a.datum_primjene);
+        const second = new Date(b.datum_primjene);
 
-    setIsFetching(true);
+        if (first > second) return -1;
+        if (second > first) return 1;
 
-    fetch(
-      `${isProd ? 'https://corsproxy.io?' : ''}${url}/tecajn-eur/v3?datum-primjene-od=${formatDate(startDate)}&datum-primjene-do=${formatDate(endDate)}`
-    )
-      .then((res) => res.json())
-      .then((data: ExchangeRate[]) => {
-        const filteredData = [
-          ...new Map(
-            data
-              .filter((entry) => entry.valuta === currency)
-              .map((entry) => [entry['broj_tecajnice'], entry])
-          ).values(),
-        ].sort((a, b) => {
-          const first = new Date(a.datum_primjene);
-          const second = new Date(b.datum_primjene);
-
-          if (first > second) return -1;
-          if (second < first) return 1;
-
-          return 0;
-        });
-
-        setData(filteredData);
-        setIsFetching(false);
+        return 0;
       });
-  }, [selectedDate, selectedPastDays]);
+
+      setFilteredData(filtered);
+    }
+  }, [data]);
 
   /**
    * Methods
@@ -102,7 +96,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
   /**
    * Fallback in case the data array is empty
    */
-  if (!data.length) return <div>Loading...</div>;
+  if (!filteredData.length) return <div>Loading...</div>;
 
   return (
     <DefaultLayout>
@@ -120,7 +114,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
             value={selectedDate}
             label="Please select date"
             disableFuture
-            disabled={!!date || isFetching}
+            disabled={!!date || loading}
             onChange={handleDateChange}
           />
           <TextField
@@ -129,11 +123,11 @@ const ExchangeRateHistoryPage: React.FC = () => {
             onChange={handleSelectedPastDaysChange}
             inputProps={{ min: minPastDays, max: maxPastDays }}
             label="Number of days"
-            disabled={isFetching}
+            disabled={loading}
           />
 
           <CustomTable
-            data={data}
+            data={filteredData}
             columnOffset={0}
             sortable={false}
             filterable={false}
