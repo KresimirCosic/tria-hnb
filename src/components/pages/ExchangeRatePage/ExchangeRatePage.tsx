@@ -48,16 +48,6 @@ const ExchangeRatePage: React.FC = () => {
     );
   };
 
-  /**
-   * Fallback in case the data array is empty
-   */
-  if (!exchangeRates.length)
-    return (
-      <Container>
-        <CircularProgress />
-      </Container>
-    );
-
   return (
     <DefaultLayout>
       <div className="page page-exchange-rate">
@@ -65,10 +55,12 @@ const ExchangeRatePage: React.FC = () => {
           <div className="header-container">
             <div className="title-container">
               <Typography variant="h2">
-                Exchange rate number: {exchangeRates[0].broj_tecajnice}
+                Exchange rate number:
+                {!!exchangeRates.length && exchangeRates[0].broj_tecajnice}
               </Typography>
               <Typography variant="h4">
-                Date: {exchangeRates[0].datum_primjene}
+                Date:
+                {!!exchangeRates.length && exchangeRates[0].datum_primjene}
               </Typography>
             </div>
 
