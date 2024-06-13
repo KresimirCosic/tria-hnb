@@ -1,5 +1,6 @@
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -28,19 +29,17 @@ const ExchangeRatePage: React.FC = () => {
    * Methods
    */
   const handleDateChange = (value: Date | null) => {
-    setSelectedDate(value!);
+    if (!value) return;
+
+    if (!isNaN(value!.getTime())) {
+      setSelectedDate(value!);
+    }
   };
 
-  const handlePrevDate = () => {
-    const prevDate = new Date(selectedDate);
-    prevDate.setDate(prevDate.getDate() - 1);
-    setSelectedDate(prevDate);
-  };
-
-  const handleNextDate = () => {
-    const nextDate = new Date(selectedDate);
-    nextDate.setDate(nextDate.getDate() + 1);
-    setSelectedDate(nextDate);
+  const handleDateButtonChange = (direction: 'asc' | 'desc') => {
+    const date = new Date(selectedDate);
+    date.setDate(direction === 'asc' ? date.getDate() + 1 : date.getDate() - 1);
+    setSelectedDate(date);
   };
 
   const handleRowClick = (row: ExchangeRate) => {
@@ -52,42 +51,50 @@ const ExchangeRatePage: React.FC = () => {
   /**
    * Fallback in case the data array is empty
    */
-  if (!data.length) return <div>Loading...</div>;
+  if (!data.length && loading)
+    return (
+      <Container>
+        <CircularProgress />
+      </Container>
+    );
 
   return (
     <DefaultLayout>
       <div className="page page-exchange-rate">
         <Container>
-          {/* Controls */}
-          <DatePicker
-            value={selectedDate}
-            label="Please select date"
-            onChange={handleDateChange}
-            disableFuture
-          />
+          <div className="header-container">
+            <div className="title-container">
+              <Typography variant="h2">
+                Exchange rate number: {data[0].broj_tecajnice}
+              </Typography>
+              <Typography variant="h4">
+                Date: {data[0].datum_primjene}
+              </Typography>
+            </div>
 
-          <br />
-          <br />
+            <div className="controls-container">
+              <DatePicker
+                value={selectedDate}
+                label="Please select date"
+                onChange={handleDateChange}
+                disableFuture
+                sx={{ marginBlockEnd: '1rem' }}
+              />
 
-          <ButtonGroup variant="contained" size="large" disabled={loading}>
-            <Button onClick={handlePrevDate}>Previous day</Button>
-            <Button onClick={handleNextDate} disabled={isToday(selectedDate)}>
-              Next day
-            </Button>
-          </ButtonGroup>
+              <ButtonGroup variant="contained" size="large" disabled={loading}>
+                <Button onClick={() => handleDateButtonChange('desc')}>
+                  Previous day
+                </Button>
+                <Button
+                  onClick={() => handleDateButtonChange('asc')}
+                  disabled={isToday(selectedDate)}
+                >
+                  Next day
+                </Button>
+              </ButtonGroup>
+            </div>
+          </div>
 
-          <br />
-          <br />
-
-          <Typography variant="h4">
-            Exchange rate number: {data[0].broj_tecajnice}
-          </Typography>
-          <Typography variant="h4">Date: {data[0].datum_primjene}</Typography>
-
-          <br />
-          <br />
-
-          {/* Table */}
           <CustomTable
             data={data}
             onRowClick={handleRowClick}
