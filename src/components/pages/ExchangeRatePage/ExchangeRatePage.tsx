@@ -64,7 +64,7 @@ const ExchangeRatePage: React.FC = () => {
         <Container>
           <div className="header-container">
             <div className="title-container">
-              <Typography variant="h4">
+              <Typography variant="h2">
                 Exchange rate number: {data[0].broj_tecajnice}
               </Typography>
               <Typography variant="h4">
@@ -72,13 +72,13 @@ const ExchangeRatePage: React.FC = () => {
               </Typography>
             </div>
 
-            {/* Controls */}
             <div className="controls-container">
               <DatePicker
                 value={selectedDate}
                 label="Please select date"
                 onChange={handleDateChange}
                 disableFuture
+                sx={{ marginBlockEnd: '1rem' }}
               />
 
               <ButtonGroup variant="contained" size="large" disabled={loading}>
@@ -95,7 +95,6 @@ const ExchangeRatePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Table */}
           <CustomTable
             data={data}
             onRowClick={handleRowClick}

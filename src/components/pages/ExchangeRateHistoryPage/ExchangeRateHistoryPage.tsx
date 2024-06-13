@@ -40,7 +40,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
    * Side effects
    */
   useEffect(() => {
-    if (data) {
+    if (data.length) {
       const filtered = [
         ...new Map(
           data
@@ -108,29 +108,32 @@ const ExchangeRateHistoryPage: React.FC = () => {
     <DefaultLayout>
       <div className="page page-exchange-rate-history">
         <Container>
-          <Typography variant="h4">
-            Exchange rate for {currency} {date && `(${date})`}
-          </Typography>
+          <div className="header-container">
+            <div className="title-container">
+              <Typography variant="h4">
+                Exchange rate for {currency} {date && `(${date})`}
+              </Typography>
+            </div>
 
-          <br />
-          <br />
-
-          {/* Controls */}
-          <DatePicker
-            value={selectedDate}
-            label="Please select date"
-            disableFuture
-            disabled={!!date || loading}
-            onChange={handleDateChange}
-          />
-          <TextField
-            type="number"
-            value={selectedPastDays}
-            onChange={handleSelectedPastDaysChange}
-            inputProps={{ min: minPastDays, max: maxPastDays }}
-            label="Number of days"
-            disabled={loading}
-          />
+            <div className="controls-container">
+              <TextField
+                type="number"
+                value={selectedPastDays}
+                onChange={handleSelectedPastDaysChange}
+                inputProps={{ min: minPastDays, max: maxPastDays }}
+                label="Number of days"
+                disabled={loading}
+              />
+              <DatePicker
+                value={selectedDate}
+                label="Please select date"
+                disableFuture
+                disabled={!!date || loading}
+                onChange={handleDateChange}
+                sx={{ flexGrow: 1 }}
+              />
+            </div>
+          </div>
 
           <CustomTable
             data={filteredData}
