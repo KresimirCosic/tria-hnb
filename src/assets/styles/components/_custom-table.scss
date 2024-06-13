@@ -1,0 +1,36 @@
+.custom-table {
+  .filters-container {
+    display: flex;
+    flex-direction: column;
+    margin-block-end: 1rem;
+
+    @media (min-width: $breakpoint-sm) {
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+
+    > * {
+      flex-grow: 1;
+
+      &:not(:last-child) {
+        margin-block-end: 0.5rem;
+      }
+
+      @media (min-width: $breakpoint-sm) {
+        margin-block-end: unset;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      transition: opacity 0.3s;
+      opacity: 0.5;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}

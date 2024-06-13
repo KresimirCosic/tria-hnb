@@ -93,9 +93,9 @@ const CustomTable: React.FC<CustomTableProps> = ({
   };
 
   return (
-    <>
+    <div className="custom-table">
       {filterable && (
-        <div>
+        <div className="filters-container">
           {Object.keys(filter).map((key) => (
             <TextField
               key={key}
@@ -108,13 +108,10 @@ const CustomTable: React.FC<CustomTableProps> = ({
         </div>
       )}
 
-      <br />
-      <br />
-
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow sx={{ cursor: 'pointer' }}>
+            <TableRow>
               {Object.keys(data[0]).map((headCell, idx) => {
                 if (idx >= columnOffset) {
                   return sortable ? (
@@ -172,7 +169,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
           </TableBody>
         </Table>
       </TableContainer>
-    </>
+    </div>
   );
 };
 
