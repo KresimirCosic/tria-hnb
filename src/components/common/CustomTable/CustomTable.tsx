@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { CellColor } from '../../../enums';
 import { ExchangeRate } from '../../../types';
 import { formatText } from '../../../utils/formatText';
+import { v4 } from 'uuid';
 
 type CustomTableProps = {
   data: ExchangeRate[];
@@ -108,67 +109,71 @@ const CustomTable: React.FC<CustomTableProps> = ({
         </div>
       )}
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {Object.keys(data[0]).map((headCell, idx) => {
-                if (idx >= columnOffset) {
-                  return sortable ? (
-                    <TableCell key={headCell}>
-                      <TableSortLabel
-                        active={orderBy === headCell}
-                        direction={orderBy === headCell ? order : 'asc'}
-                        onClick={() =>
-                          handleRequestSort(headCell as keyof ExchangeRate)
-                        }
-                      >
-                        {formatText(headCell)}
-                      </TableSortLabel>
-                    </TableCell>
-                  ) : (
-                    <TableCell key={headCell}>{formatText(headCell)}</TableCell>
-                  );
-                }
-              })}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {sortedData.map((row, rIdx) => {
-              return (
-                <TableRow
-                  key={`${row.broj_tecajnice}-${row.sifra_valute}`}
-                  onClick={() => {
-                    if (onRowClick) onRowClick(row);
-                  }}
-                >
-                  {Object.values(row).map((cell, idx) => {
-                    if (idx >= columnOffset)
-                      return (
-                        <TableCell
-                          sx={
-                            colored
-                              ? {
-                                  backgroundColor: getCellColor(
-                                    row,
-                                    data[rIdx + 1]
-                                  ),
-                                }
-                              : null
+      {!!data.length && (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {Object.keys(data[0]).map((headCell, idx) => {
+                  if (idx >= columnOffset) {
+                    return sortable ? (
+                      <TableCell key={headCell}>
+                        <TableSortLabel
+                          active={orderBy === headCell}
+                          direction={orderBy === headCell ? order : 'asc'}
+                          onClick={() =>
+                            handleRequestSort(headCell as keyof ExchangeRate)
                           }
-                          key={idx}
                         >
-                          {cell}
-                        </TableCell>
-                      );
-                  })}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                          {formatText(headCell)}
+                        </TableSortLabel>
+                      </TableCell>
+                    ) : (
+                      <TableCell key={headCell}>
+                        {formatText(headCell)}
+                      </TableCell>
+                    );
+                  }
+                })}
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {sortedData.map((row, rIdx) => {
+                return (
+                  <TableRow
+                    key={v4()}
+                    onClick={() => {
+                      if (onRowClick) onRowClick(row);
+                    }}
+                  >
+                    {Object.values(row).map((cell, idx) => {
+                      if (idx >= columnOffset)
+                        return (
+                          <TableCell
+                            sx={
+                              colored
+                                ? {
+                                    backgroundColor: getCellColor(
+                                      row,
+                                      data[rIdx + 1]
+                                    ),
+                                  }
+                                : null
+                            }
+                            key={idx}
+                          >
+                            {cell}
+                          </TableCell>
+                        );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </div>
   );
 };
