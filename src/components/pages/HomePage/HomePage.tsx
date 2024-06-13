@@ -2,6 +2,7 @@ import DollarIcon from '@mui/icons-material/AttachMoney';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import Fab from '@mui/material/Fab';
 import { Link } from 'react-router-dom';
+import { v4 } from 'uuid';
 
 import DefaultLayout from '../../layouts/DefaultLayout/DefaultLayout';
 
@@ -26,7 +27,7 @@ const HomePage: React.FC = () => {
     <DefaultLayout>
       <div className="page page-home">
         {fabLinks.map((fabLink) => (
-          <Link to={fabLink.to} key={fabLink.to}>
+          <Link to={fabLink.to} key={v4()}>
             <Fab color="primary" sx={{ padding: '4rem' }}>
               {fabLink.icon}
             </Fab>

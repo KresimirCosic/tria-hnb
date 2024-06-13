@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import CustomTable from '../../../components/common/CustomTable/CustomTable';
-import { useFetch } from '../../../hooks';
+import { useExchangeRatesContext } from '../../../hooks';
 import { ExchangeRate } from '../../../types';
 import { formatDate } from '../../../utils/formatDate';
 import DefaultLayout from '../../layouts/DefaultLayout/DefaultLayout';
@@ -30,7 +30,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
   const [selectedPastDays, setSelectedPastDays] = useState(minPastDays);
   const endDate = selectedDate;
   const startDate = subDays(endDate, selectedPastDays);
-  const { data, loading } = useFetch<ExchangeRate>(
+  const { exchangeRates, loadingExchangeRates } = useExchangeRatesContext(
     `/tecajn-eur/v3?datum-primjene-od=${formatDate(startDate)}&datum-primjene-do=${formatDate(endDate)}`,
     [selectedDate, selectedPastDays]
   );
@@ -40,10 +40,10 @@ const ExchangeRateHistoryPage: React.FC = () => {
    * Side effects
    */
   useEffect(() => {
-    if (data.length) {
+    if (exchangeRates.length) {
       const filtered = [
         ...new Map(
-          data
+          exchangeRates
             .filter((entry) => entry.valuta === currency)
             .map((entry) => [entry['broj_tecajnice'], entry])
         ).values(),
@@ -59,7 +59,7 @@ const ExchangeRateHistoryPage: React.FC = () => {
 
       setFilteredData(filtered);
     }
-  }, [data]);
+  }, [exchangeRates]);
 
   /**
    * Methods
@@ -94,16 +94,6 @@ const ExchangeRateHistoryPage: React.FC = () => {
     setSelectedPastDays(Number(value));
   };
 
-  /**
-   * Fallback in case the data array is empty
-   */
-  if (!filteredData.length)
-    return (
-      <Container>
-        <CircularProgress />
-      </Container>
-    );
-
   return (
     <DefaultLayout>
       <div className="page page-exchange-rate-history">
@@ -122,13 +112,13 @@ const ExchangeRateHistoryPage: React.FC = () => {
                 onChange={handleSelectedPastDaysChange}
                 inputProps={{ min: minPastDays, max: maxPastDays }}
                 label="Number of days"
-                disabled={loading}
+                disabled={loadingExchangeRates}
               />
               <DatePicker
                 value={selectedDate}
                 label="Please select date"
                 disableFuture
-                disabled={!!date || loading}
+                disabled={!!date || loadingExchangeRates}
                 onChange={handleDateChange}
                 sx={{ flexGrow: 1 }}
               />

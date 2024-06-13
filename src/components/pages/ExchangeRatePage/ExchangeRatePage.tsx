@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CustomTable from '../../../components/common/CustomTable/CustomTable';
-import { useFetch } from '../../../hooks';
+import { useExchangeRatesContext } from '../../../hooks';
 import { ExchangeRate } from '../../../types';
 import { formatDate } from '../../../utils/formatDate';
 import DefaultLayout from '../../layouts/DefaultLayout/DefaultLayout';
@@ -19,11 +19,11 @@ const ExchangeRatePage: React.FC = () => {
    * State
    */
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const navigate = useNavigate();
-  const { data, loading } = useFetch<ExchangeRate>(
+  const { exchangeRates, loadingExchangeRates } = useExchangeRatesContext(
     `/tecajn-eur/v3?datum-primjene=${formatDate(selectedDate)}`,
     [selectedDate]
   );
+  const navigate = useNavigate();
 
   /**
    * Methods
@@ -48,16 +48,6 @@ const ExchangeRatePage: React.FC = () => {
     );
   };
 
-  /**
-   * Fallback in case the data array is empty
-   */
-  if (!data.length && loading)
-    return (
-      <Container>
-        <CircularProgress />
-      </Container>
-    );
-
   return (
     <DefaultLayout>
       <div className="page page-exchange-rate">
@@ -65,10 +55,12 @@ const ExchangeRatePage: React.FC = () => {
           <div className="header-container">
             <div className="title-container">
               <Typography variant="h2">
-                Exchange rate number: {data[0].broj_tecajnice}
+                Exchange rate number:
+                {!!exchangeRates.length && exchangeRates[0].broj_tecajnice}
               </Typography>
               <Typography variant="h4">
-                Date: {data[0].datum_primjene}
+                Date:
+                {!!exchangeRates.length && exchangeRates[0].datum_primjene}
               </Typography>
             </div>
 
@@ -81,7 +73,11 @@ const ExchangeRatePage: React.FC = () => {
                 sx={{ marginBlockEnd: '1rem' }}
               />
 
-              <ButtonGroup variant="contained" size="large" disabled={loading}>
+              <ButtonGroup
+                variant="contained"
+                size="large"
+                disabled={loadingExchangeRates}
+              >
                 <Button onClick={() => handleDateButtonChange('desc')}>
                   Previous day
                 </Button>
@@ -96,7 +92,7 @@ const ExchangeRatePage: React.FC = () => {
           </div>
 
           <CustomTable
-            data={data}
+            data={exchangeRates}
             onRowClick={handleRowClick}
             columnOffset={2}
           />
